@@ -5,7 +5,7 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 class LoyaltyDB:
     def __init__(self):
         self.initDB()
-        self.DB_URL = "postgresql://program:test@postgres:5432/loyalties"
+        self.DB_URL = "postgresql://postgres:postgres@postgres:5432/loyalties"
         if not self.check_existing_table_loyalty():
             self.create_table_loyalty()
 

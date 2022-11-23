@@ -5,7 +5,7 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 class PaymentDB:
     def __init__(self):
         self.initDB()
-        self.DB_URL = "postgresql://program:test@postgres:5432/payments"
+        self.DB_URL = "postgresql://postgres:postgres@postgres:5432/payments"
         if not self.check_existing_table_payment():
             self.create_table_payment()
 

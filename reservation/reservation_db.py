@@ -7,7 +7,7 @@ class ReservationDB:
 
     def __init__(self):
         self.initDB()
-        self.DB_URL = "postgresql://program:test@postgres:5432/reservations"
+        self.DB_URL = "postgresql://postgres:postgres@postgres:5432/reservations"
         if not self.check_existing_table_hotels():
             self.create_table_hotels()
         if not self.check_existing_table_reservation():
