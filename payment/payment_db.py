@@ -1,16 +1,34 @@
 import psycopg2
 from psycopg2 import Error
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 class PaymentDB:
     def __init__(self):
-        self.DB_URL = "postgres://cypubjqljpvvrt:932ead6c14327f40eb1b43bb285b7c76dbfaa929c99b6ae25f7b8915f0ac301d@ec2-52-49-201-212.eu-west-1.compute.amazonaws.com:5432/d3spo9noe4jbtd"
-        
+        self.initDB()
+        self.DB_URL = "postgresql://program:test@postgres:5432/payments"
         if not self.check_existing_table_payment():
             self.create_table_payment()
 
-
+    def initDB(self):
+        connection = psycopg2.connect(
+                            database="postgres",
+                            user='postgres',
+                            password='postgres',
+                            host='postgres',
+                            port= '5432')
+        connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        cursor = connection.cursor()
+        try:
+            cursor.execute(""" CREATE DATABASE payments """)
+            connection.commit()
+        except (Exception, Error) as error:
+            print("Ошибка при работе с PostgreSQL", error)
+        finally:
+            cursor.close()
+            connection.close()
+            
     def check_existing_table_payment(self):
-        connection = psycopg2.connect(self.DB_URL, sslmode="require")
+        connection = psycopg2.connect(self.DB_URL)
         cursor = connection.cursor()
         cursor.execute("""SELECT table_name FROM information_schema.tables
                WHERE table_schema = 'public'""")
@@ -34,7 +52,7 @@ class PaymentDB:
                 price       INT         NOT NULL
             );
             '''
-        connection = psycopg2.connect(self.DB_URL, sslmode="require")
+        connection = psycopg2.connect(self.DB_URL)
         cursor = connection.cursor()
         cursor.execute(q)
         connection.commit()
@@ -44,7 +62,7 @@ class PaymentDB:
     def get_payment(self, paymentUid):
         result = list()
         try:
-            connection = psycopg2.connect(self.DB_URL, sslmode="require")
+            connection = psycopg2.connect(self.DB_URL)
             cursor = connection.cursor()
             cursor.execute(''' SELECT status, price FROM payment WHERE payment_uid = %s; ''', (paymentUid,))
             record = cursor.fetchall()
@@ -63,7 +81,7 @@ class PaymentDB:
     def post_payment(self, uiid, price):
         result = list()
         try:
-            connection = psycopg2.connect(self.DB_URL, sslmode="require")
+            connection = psycopg2.connect(self.DB_URL)
             cursor = connection.cursor()
             q = '''
                 INSERT INTO payment
@@ -95,7 +113,7 @@ class PaymentDB:
     def cancel_payment(self, paymentUid):
         result = False
         try:
-            connection = psycopg2.connect(self.DB_URL, sslmode="require")
+            connection = psycopg2.connect(self.DB_URL)
             cursor = connection.cursor()
             q = ''' UPDATE payment SET status = %s WHERE payment_uid = %s; '''
             cursor.execute(q, ('CANCELED', paymentUid))

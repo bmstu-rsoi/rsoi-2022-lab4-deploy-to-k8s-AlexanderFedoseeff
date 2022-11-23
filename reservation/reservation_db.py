@@ -1,18 +1,38 @@
 import psycopg2
 from psycopg2 import Error
 import datetime
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 class ReservationDB:
+
     def __init__(self):
-        self.DB_URL = "postgres://cypubjqljpvvrt:932ead6c14327f40eb1b43bb285b7c76dbfaa929c99b6ae25f7b8915f0ac301d@ec2-52-49-201-212.eu-west-1.compute.amazonaws.com:5432/d3spo9noe4jbtd"
-        
+        self.initDB()
+        self.DB_URL = "postgresql://program:test@postgres:5432/reservations"
         if not self.check_existing_table_hotels():
             self.create_table_hotels()
         if not self.check_existing_table_reservation():
             self.create_table_reservation()
 
+    def initDB(self):
+        connection = psycopg2.connect(
+                            database="postgres",
+                            user='postgres',
+                            password='postgres',
+                            host='postgres',
+                            port= '5432')
+        connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        cursor = connection.cursor()
+        try:
+            cursor.execute(""" CREATE DATABASE reservations """)
+            connection.commit()
+        except (Exception, Error) as error:
+            print("Ошибка при работе с PostgreSQL", error)
+        finally:
+            cursor.close()
+            connection.close()
+
     def check_existing_table_reservation(self):
-        connection = psycopg2.connect(self.DB_URL, sslmode="require")
+        connection = psycopg2.connect(self.DB_URL)
         cursor = connection.cursor()
         cursor.execute("""SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'""")
         for table in cursor.fetchall():
@@ -24,7 +44,7 @@ class ReservationDB:
         return False
 
     def check_existing_table_hotels(self):
-        connection = psycopg2.connect(self.DB_URL, sslmode="require")
+        connection = psycopg2.connect(self.DB_URL)
         cursor = connection.cursor()
         cursor.execute("""SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'""")
         for table in cursor.fetchall():
@@ -51,7 +71,7 @@ class ReservationDB:
                         end_date        TIMESTAMP WITH TIME ZONE
                     );
                     '''
-        connection = psycopg2.connect(self.DB_URL, sslmode="require")
+        connection = psycopg2.connect(self.DB_URL)
         cursor = connection.cursor()
         cursor.execute(q)
         connection.commit()
@@ -96,7 +116,7 @@ class ReservationDB:
                         10000
                     );
                     '''
-        connection = psycopg2.connect(self.DB_URL, sslmode="require")
+        connection = psycopg2.connect(self.DB_URL)
         cursor = connection.cursor()
         cursor.execute(q1)
         cursor.execute(q2)
@@ -107,7 +127,7 @@ class ReservationDB:
     def get_hotels(self):
         result = list()
         try:
-            connection = psycopg2.connect(self.DB_URL, sslmode="require")
+            connection = psycopg2.connect(self.DB_URL)
             cursor = connection.cursor()
             cursor.execute("SELECT id, hotel_uid, name, country, city, address, stars, price FROM hotels")
             record = cursor.fetchall()
@@ -126,7 +146,7 @@ class ReservationDB:
     def user_reservations(self, username):
         result = list()
         try:
-            connection = psycopg2.connect(self.DB_URL, sslmode="require")
+            connection = psycopg2.connect(self.DB_URL)
             cursor = connection.cursor()
             q1 = '''
                     SELECT 
@@ -181,7 +201,7 @@ class ReservationDB:
     def reservate(self, reservationUid, username, paymentUid, hotel_id, status, startDate, endDate):
         result = False
         try:
-            connection = psycopg2.connect(self.DB_URL, sslmode="require")
+            connection = psycopg2.connect(self.DB_URL)
             cursor = connection.cursor()
 
             q = '''
@@ -215,7 +235,7 @@ class ReservationDB:
     def cancel_reservation(self, reservationUid):
         result = ''
         try:
-            connection = psycopg2.connect(self.DB_URL, sslmode="require")
+            connection = psycopg2.connect(self.DB_URL)
             cursor = connection.cursor()
             q1 = ''' UPDATE reservation SET status = %s WHERE reservation_uid = %s; '''
             cursor.execute(q1, ('CANCELED', reservationUid))

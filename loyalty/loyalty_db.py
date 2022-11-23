@@ -1,16 +1,35 @@
 import psycopg2
 from psycopg2 import Error
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 class LoyaltyDB:
     def __init__(self):
-        self.DB_URL = "postgres://cypubjqljpvvrt:932ead6c14327f40eb1b43bb285b7c76dbfaa929c99b6ae25f7b8915f0ac301d@ec2-52-49-201-212.eu-west-1.compute.amazonaws.com:5432/d3spo9noe4jbtd"
-        
+        self.initDB()
+        self.DB_URL = "postgresql://program:test@postgres:5432/loyalties"
         if not self.check_existing_table_loyalty():
             self.create_table_loyalty()
 
 
+    def initDB(self):
+        connection = psycopg2.connect(
+                            database="postgres",
+                            user='postgres',
+                            password='postgres',
+                            host='postgres',
+                            port= '5432')
+        connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        cursor = connection.cursor()
+        try:
+            cursor.execute(""" CREATE DATABASE loyalties """)
+            connection.commit()
+        except (Exception, Error) as error:
+            print("Ошибка при работе с PostgreSQL", error)
+        finally:
+            cursor.close()
+            connection.close()
+            
     def check_existing_table_loyalty(self):
-        connection = psycopg2.connect(self.DB_URL, sslmode="require")
+        connection = psycopg2.connect(self.DB_URL)
         cursor = connection.cursor()
         cursor.execute("""SELECT table_name FROM information_schema.tables
                WHERE table_schema = 'public'""")
@@ -53,7 +72,7 @@ class LoyaltyDB:
                         10
                     );
                     '''
-        connection = psycopg2.connect(self.DB_URL, sslmode="require")
+        connection = psycopg2.connect(self.DB_URL)
         cursor = connection.cursor()
         cursor.execute(q1)
         cursor.execute(q2)
@@ -65,7 +84,7 @@ class LoyaltyDB:
     def get_loyalty(self, username):
         result = list()
         try:
-            connection = psycopg2.connect(self.DB_URL, sslmode="require")
+            connection = psycopg2.connect(self.DB_URL)
             cursor = connection.cursor()
             cursor.execute(''' SELECT reservation_count, status, discount, username FROM loyalty WHERE username = %s ''', (username,))
 
@@ -100,7 +119,7 @@ class LoyaltyDB:
                 else:
                     target_status = 'GOLD'
                     target_discount = 10
-                connection = psycopg2.connect(self.DB_URL, sslmode="require")
+                connection = psycopg2.connect(self.DB_URL)
                 cursor = connection.cursor()
                 q = ''' UPDATE loyalty SET reservation_count = %s, status = %s, discount = %s WHERE username = %s; '''
                 cursor.execute(q, (target_reservation_count, target_status, target_discount, username))
@@ -147,7 +166,7 @@ class LoyaltyDB:
                 else:
                     target_status = 'GOLD'
                     target_discount = 10
-                connection = psycopg2.connect(self.DB_URL, sslmode="require")
+                connection = psycopg2.connect(self.DB_URL)
                 cursor = connection.cursor()
                 q = ''' UPDATE loyalty SET reservation_count = %s, status = %s, discount = %s WHERE username = %s; '''
                 cursor.execute(q, (target_reservation_count, target_status, target_discount, username))
