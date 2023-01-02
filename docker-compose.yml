@@ -15,7 +15,7 @@ services:
       - "5432:5432"
 
   gateway:
-    image: gateway
+    image: alexanderfedoseeff/lab-rsoi-gateway
     restart: on-failure
     build: ./gateway/
     container_name: gateway
@@ -28,7 +28,7 @@ services:
       - loyalty
     
   reservation:
-    image: image
+    image: alexanderfedoseeff/lab-rsoi-reservation
     restart: on-failure
     build: ./reservation/
     container_name: reservation
@@ -38,7 +38,7 @@ services:
       - postgres
 
   payment:
-    image: payment
+    image: alexanderfedoseeff/lab-rsoi-payment
     restart: on-failure
     build: ./payment/
     container_name: payment
@@ -48,7 +48,7 @@ services:
       - postgres
 
   loyalty:
-    image: loyalty
+    image: alexanderfedoseeff/lab-rsoi-loyalty
     restart: on-failure
     build: ./loyalty/
     container_name: loyalty

@@ -1,0 +1,24 @@
+gateway:
+  name: gateway
+  repo: alexanderfedoseeff/lab-rsoi-gateway:latest
+  port: 8080
+reservation:
+  name: reservation
+  repo: alexanderfedoseeff/lab-rsoi-reservation:latest
+  port: 8070
+loyalty:
+  name: loyalty
+  repo: alexanderfedoseeff/lab-rsoi-loyalty:latest
+  port: 8050
+payment:
+  name: payment
+  repo: alexanderfedoseeff/lab-rsoi-payment:latest
+  port: 8060
+postgres:
+  name: postgres
+  repo: library/postgres:13
+  port: 5432
+  default_database:
+    name: postgres
+    user: postgres
+    password: postgres
