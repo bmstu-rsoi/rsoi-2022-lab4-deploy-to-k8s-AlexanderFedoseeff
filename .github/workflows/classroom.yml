@@ -17,11 +17,12 @@ jobs:
       - name: Docker step
         run: |
           echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
-          docker-compose up
-          docker push alexanderfedoseeff/lab_rsoi_gateway:latest
-          docker push alexanderfedoseeff/lab_rsoi_reservation:latest
-          docker push alexanderfedoseeff/lab_rsoi_payment:latest
-          docker push alexanderfedoseeff/lab_rsoi_loyalty:latest
+          #docker-compose up
+          #docker push alexanderfedoseeff/lab_rsoi_gateway:latest
+          #docker push alexanderfedoseeff/lab_rsoi_reservation:latest
+          #docker push alexanderfedoseeff/lab_rsoi_payment:latest
+          #docker push alexanderfedoseeff/lab_rsoi_loyalty:latest
+          #whf?
 
 
       - name: Run API Tests
