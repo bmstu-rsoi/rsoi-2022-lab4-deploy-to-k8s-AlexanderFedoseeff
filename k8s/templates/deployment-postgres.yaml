@@ -6,7 +6,7 @@ metadata:
         app : {{ .Values.postgres.name }}
         owner : AlexanderFedoseeff
 spec:
-    replicas: 1
+    replicas: {{ .Values.postgres.replicaCount }}
     selector:
         matchLabels:
             app: {{ .Values.postgres.name }}

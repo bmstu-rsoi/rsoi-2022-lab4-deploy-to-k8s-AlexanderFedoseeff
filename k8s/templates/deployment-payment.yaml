@@ -6,7 +6,7 @@ metadata:
         app : {{ .Values.payment.name }}
         owner : AlexanderFedoseeff
 spec:
-    replicas: 2
+    replicas: {{ .Values.payment.replicaCount }}
     selector:
         matchLabels:
             app: {{ .Values.payment.name }}
