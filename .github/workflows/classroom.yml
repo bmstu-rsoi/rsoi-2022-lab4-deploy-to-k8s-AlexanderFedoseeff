@@ -24,8 +24,8 @@ jobs:
       - name: K8S step
         run: |
           curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
-          echo 'source /home/runner/yandex-cloud/completion.zsh.inc' >>  ~/.zshrc
-          echo ${{ secrets.Y_TOKEN }} |  yc init --password-stdin  
+          exec -l $SHELL
+          echo ${{ secrets.Y_TOKEN }} | yc init --password-stdin  
           yc managed-kubernetes cluster get-credentials --id ${{ secrets.K8S_ID }} --external --force
         #  helm install lab k8s\
         #  kubectl get pods
