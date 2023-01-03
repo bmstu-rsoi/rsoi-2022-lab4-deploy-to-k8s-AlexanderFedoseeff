@@ -13,17 +13,23 @@ jobs:
 
       - uses: docker/setup-buildx-action@v2
 
-      # TODO build, publish to docker hub, deploy to k8s
       - name: Docker step
         run: |
           echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
-          #docker-compose up
-          #docker push alexanderfedoseeff/lab_rsoi_gateway:latest
-          #docker push alexanderfedoseeff/lab_rsoi_reservation:latest
-          #docker push alexanderfedoseeff/lab_rsoi_payment:latest
-          #docker push alexanderfedoseeff/lab_rsoi_loyalty:latest
-          #whf?
-
+          docker compose build
+          docker compose push
+        timeout-minutes: 1
+      - name: K8S step
+        run: |
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+          echo ${{ secrets.Y_TOKEN }} |  yc init --password-stdin
+          yc managed-kubernetes cluster get-credentials --id ${{ secrets.K8S_ID }} --external --force
+          #helm install ingress-nginx/ingress-nginx --generate-name
+          helm install lab k8s\
+          kubectl get pods
+          kubectl get svc
+          kubectl get ingress
+        timeout-minutes: 1
 
       - name: Run API Tests
         uses: matt-ball/newman-action@master
