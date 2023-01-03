@@ -16,9 +16,11 @@ jobs:
       - name: Docker step
         run: |
           echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
-          docker compose build
-          docker compose push
-        timeout-minutes: 1
+        #whf?
+        # docker compose build
+        # docker compose push
+        #timeout-minutes: 1
+
       - name: K8S step
         run: |
           curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
