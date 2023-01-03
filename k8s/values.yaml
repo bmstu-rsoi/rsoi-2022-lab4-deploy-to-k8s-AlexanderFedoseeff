@@ -22,3 +22,10 @@ postgres:
     name: postgres
     user: postgres
     password: postgres
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 200m
+      memory: 1024Mi
