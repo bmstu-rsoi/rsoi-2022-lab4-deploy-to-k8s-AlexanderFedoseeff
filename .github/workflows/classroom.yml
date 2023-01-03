@@ -27,12 +27,11 @@ jobs:
           exec -l $SHELL
           echo ${{ secrets.Y_TOKEN }} | yc init --password-stdin  
           yc managed-kubernetes cluster get-credentials --id ${{ secrets.K8S_ID }} --external --force
-        #  helm install lab k8s\
-        #  kubectl get pods
-        #  kubectl get svc
-        #  kubectl get ingress
+          helm install lab k8s\
+          kubectl get pods
+          kubectl get svc
+          kubectl get ingress
         timeout-minutes: 1
-        #whf
 
       - name: Run API Tests
         uses: matt-ball/newman-action@master
